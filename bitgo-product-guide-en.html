@@ -257,6 +257,15 @@
       color: #34445c;
     }
 
+    .text-highlight {
+      display: inline;
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
     .coin-heading {
       display: flex;
       align-items: center;
@@ -337,6 +346,10 @@
 
     .step-list li {
       counter-increment: steps;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
       min-width: 0;
       min-height: 154px;
       padding: 18px;
@@ -344,13 +357,13 @@
       border-radius: 8px;
       background: var(--white);
       color: var(--ink);
+      line-height: 1.55;
       overflow-wrap: anywhere;
     }
 
     .step-list li::before {
       content: counter(steps, decimal-leading-zero);
       display: inline-flex;
-      margin-bottom: 12px;
       padding: 4px 8px;
       border-radius: 999px;
       background: var(--blue);
@@ -556,10 +569,10 @@
       <section class="section" id="highlights">
         <h2>1. Product Highlights</h2>
         <div class="grid">
-          <div class="tile"><strong>Payment Tool for the Agent Era</strong><span>BitGo provides decentralized virtual-asset payment capabilities for the Agent era, enabling AI agents, automation programs, and developer applications to consume resources safely and verifiably through cryptocurrency wallets. Instead of relying on a traditional account-balance system, it centers payment on wallet addresses, on-chain identity, and signed authorization, returning payment control to users and programs themselves.</span></div>
-          <div class="tile"><strong>Wallet as Payment Identity</strong><span>In BitGo, ETH, BTC, LTC, and other cryptocurrency wallets are not only asset holders. They also act as authorization credentials for reasoning APIs, model services, data services, and other digital resources. Each request uses a private-key signature to confirm identity and authorize spending, so the service does not need to custody user private keys or depend on centralized usernames and passwords.</span></div>
-          <div class="tile"><strong>Secure and Transparent Virtual-asset Spending</strong><span>BitGo gives every resource-consumption event a clear source, quota, and record. Users can see which wallet initiated the request, how much balance was consumed, which fund ID it maps to, and complete <code>usage</code> details for token counts, unit prices, consumed amount, and remaining balance. This keeps automated agent payments auditable and verifiable.</span></div>
-          <div class="tile"><strong>From Token Spend to the Agent Economy</strong><span>Token consumption is only the starting point for BitGo. The same wallet-signature and payment mechanism can expand to model calls, tool calls, data purchases, API subscriptions, compute rental, automated trading, task bounties, and cross-platform digital-service settlement, becoming a payment layer that connects wallets, assets, services, and agent-driven consumption.</span></div>
+          <div class="tile"><strong>Payment Tool for the Agent Era</strong><span>BitGo provides <span class="text-highlight">decentralized virtual-asset payment capabilities</span> for the Agent era, enabling AI agents, automation programs, and developer applications to consume resources safely and verifiably through cryptocurrency wallets. Instead of relying on a traditional account-balance system, it centers payment on <span class="text-highlight">wallet addresses, on-chain identity, and signed authorization</span>, returning payment control to users and programs themselves.</span></div>
+          <div class="tile"><strong>Wallet as Payment Identity</strong><span>In BitGo, ETH, BTC, LTC, and other cryptocurrency wallets are not only asset holders. They also act as <span class="text-highlight">authorization credentials</span> for reasoning APIs, model services, data services, and other digital resources. Each request uses a <span class="text-highlight">private-key signature</span> to confirm identity and authorize spending, so the service does not need to custody user private keys or depend on centralized usernames and passwords.</span></div>
+          <div class="tile"><strong>Secure and Transparent Virtual-asset Spending</strong><span>BitGo gives every resource-consumption event a <span class="text-highlight">clear source, quota, and record</span>. Users can see which wallet initiated the request, how much balance was consumed, which fund ID it maps to, and complete <code>usage</code> details for token counts, unit prices, consumed amount, and remaining balance. This keeps automated agent payments <span class="text-highlight">auditable and verifiable</span>.</span></div>
+          <div class="tile"><strong>From Token Spend to the Agent Economy</strong><span>Token consumption is only the starting point for BitGo. The same <span class="text-highlight">wallet-signature and payment mechanism</span> can expand to model calls, tool calls, data purchases, API subscriptions, compute rental, automated trading, task bounties, and cross-platform digital-service settlement, becoming a <span class="text-highlight">payment layer</span> that connects wallets, assets, services, and agent-driven consumption.</span></div>
         </div>
       </section>
 
@@ -604,7 +617,7 @@
           <li>Choose the supported chain, such as BTC, LTC, or ETH, according to the service registration.</li>
           <li>Confirm the official receiving address and network with a human operator.</li>
           <li>Transfer the required amount from the exchange or centralized wallet.</li>
-          <li>Wait for on-chain confirmations and associate the deposit with <code>money</code> and <code>money_id</code>.</li>
+          <li>Wait for on-chain confirmations and record the deposit amount and ID.</li>
           <li>Use the registered wallet address, amount, and amount ID to sign API calls.</li>
         </ol>
         <p class="callout">If the wrong chain or address is used, the agent cannot automatically recover the funds. Human confirmation remains mandatory for deposit-critical fields.</p>
