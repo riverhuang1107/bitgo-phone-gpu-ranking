@@ -71,21 +71,24 @@ class BitgoClient:
     def create_message(self, prompt: str) -> str:
         messages: list[dict[str, Any]] = [{"role": "user", "content": prompt}]
         last_raw = ""
+        usages: list[dict[str, Any]] = []
         for _ in range(4):
             last_raw = self._post(self._request_body(messages))
             payload = json.loads(last_raw)
+            if isinstance(payload.get("usage"), dict):
+                usages.append(payload["usage"])
             if payload.get("stop_reason") != "tool_use":
-                return last_raw
+                return _with_usage_summary(payload, usages)
             tool_results = [
                 self._execute_tool(item)
                 for item in payload.get("content", [])
                 if isinstance(item, dict) and item.get("type") == "tool_use"
             ]
             if not tool_results:
-                return last_raw
+                return _with_usage_summary(payload, usages)
             messages.append({"role": "assistant", "content": payload.get("content", [])})
             messages.append({"role": "user", "content": tool_results})
-        return last_raw
+        return _with_usage_summary(json.loads(last_raw), usages)
 
     def _request_body(self, messages: list[dict[str, Any]]) -> dict[str, Any]:
         body = {
@@ -177,13 +180,68 @@ def parse_model_text(raw_response: str) -> str:
     if isinstance(content, list):
         parts = [item["text"] for item in content if isinstance(item, dict) and isinstance(item.get("text"), str)]
         if parts:
-            return "\n\n".join(parts).strip()
+            return _append_usage_section("\n\n".join(parts).strip(), body)
     if isinstance(content, str):
-        return content.strip()
+        return _append_usage_section(content.strip(), body)
     if isinstance(body.get("text"), str):
-        return body["text"].strip()
+        return _append_usage_section(body["text"].strip(), body)
     print("Warning: could not find text content in bitgo response; writing JSON response.", file=sys.stderr)
     return json.dumps(payload, ensure_ascii=False, indent=2)
+
+
+def _with_usage_summary(payload: dict[str, Any], usages: list[dict[str, Any]]) -> str:
+    payload["bitgo_usage"] = {
+        "calls": len(usages),
+        "total": _sum_usages(usages),
+        "responses": usages,
+    }
+    return json.dumps(payload, ensure_ascii=False)
+
+
+def _sum_usages(usages: list[dict[str, Any]]) -> dict[str, Any]:
+    numeric_fields = [
+        "input_tokens",
+        "output_tokens",
+        "cache_creation_input_tokens",
+        "cache_read_input_tokens",
+        "consume_amount",
+    ]
+    total: dict[str, Any] = {}
+    for field in numeric_fields:
+        values = [usage.get(field) for usage in usages if isinstance(usage.get(field), int)]
+        if values:
+            total[field] = sum(values)
+    for field in ("balance", "input_token_unit_price", "output_token_unit_price"):
+        for usage in reversed(usages):
+            if field in usage:
+                total[field] = usage[field]
+                break
+    return total
+
+
+def _append_usage_section(markdown: str, body: dict[str, Any]) -> str:
+    usage = body.get("bitgo_usage")
+    if not isinstance(usage, dict):
+        return markdown
+    total = usage.get("total")
+    if not isinstance(total, dict):
+        return markdown
+
+    lines = [
+        "",
+        "## bitgo 推理 API token 使用情况",
+        "",
+        f"- API 调用轮次：{usage.get('calls', 0)}",
+        f"- 输入 tokens：{total.get('input_tokens', 0)}",
+        f"- 输出 tokens：{total.get('output_tokens', 0)}",
+        f"- 缓存创建输入 tokens：{total.get('cache_creation_input_tokens', 0)}",
+        f"- 缓存读取输入 tokens：{total.get('cache_read_input_tokens', 0)}",
+        f"- 消耗金额（10^-8 缩放）：{total.get('consume_amount', 0)}",
+        f"- 剩余额度（10^-8 缩放）：{total.get('balance', '未知')}",
+        f"- 输入单价：{total.get('input_token_unit_price', '未知')}",
+        f"- 输出单价：{total.get('output_token_unit_price', '未知')}",
+    ]
+    return markdown.rstrip() + "\n" + "\n".join(lines)
 
 
 def _tool_query(tool_use: dict[str, Any]) -> str:
