@@ -5,7 +5,15 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from phone_gpu_rank.bitgo_runtime import BitgoConfig, parse_model_text
+from phone_gpu_rank.bitgo_runtime import (
+    SEARCH_KEYWORDS,
+    SUPPLEMENTAL_SEARCH_QUERIES,
+    SearchResult,
+    BitgoConfig,
+    parse_antutu_rows,
+    parse_model_text,
+    write_search_audit,
+)
 from phone_gpu_rank.cli import main
 from phone_gpu_rank.render import OUTPUT_BASENAME, render_html
 
@@ -29,6 +37,26 @@ class RenderTests(unittest.TestCase):
         self.assertIn("<table>", html)
         self.assertIn("<th>GPU</th>", html)
         self.assertIn("<td>A</td>", html)
+
+
+class SearchAuditTests(unittest.TestCase):
+    def test_search_audit_records_required_keywords(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "search-audit.json"
+            results = [SearchResult(query=keyword, ok=True, results=[]) for keyword in [*SEARCH_KEYWORDS, *SUPPLEMENTAL_SEARCH_QUERIES]]
+            write_search_audit(path, results)
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(payload["searched_keywords"][: len(SEARCH_KEYWORDS)], SEARCH_KEYWORDS)
+            self.assertTrue(payload["all_required_keywords_searched"])
+
+    def test_parse_antutu_rows(self) -> None:
+        html = """
+        <tbody><tr><td>1</td><td>Red Magic 11 Pro</td><td>S-8 Elite Gen 5</td><td>| 16+512</td>
+        <td>1,156,174</td><td>1,467,427</td><td>502,273</td><td>855,553</td><td>3,981,427</td></tr></tbody>
+        """
+        rows = parse_antutu_rows(html)
+        self.assertEqual(rows[0]["device"], "Red Magic 11 Pro")
+        self.assertEqual(rows[0]["gpu"], "1,467,427")
 
 
 class CliTests(unittest.TestCase):

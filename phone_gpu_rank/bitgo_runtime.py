@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
+from html import unescape as html_unescape
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -20,6 +24,13 @@ SEARCH_KEYWORDS = [
     "2026 May smartphone GPU ranking",
     "AnTuTu Android flagship GPU ranking May 2026",
     "3DMark Wild Life Extreme smartphone ranking 2026",
+]
+SUPPLEMENTAL_SEARCH_QUERIES = [
+    "site:antutu.com/web/ranking Android flagship performance ranking May 2026",
+    "AnTuTu May 2026 Android flagship ranking GPU score",
+    "site:3dmark.com smartphone Wild Life Extreme score Snapdragon 8 Elite Gen 5 Dimensity 9500",
+    "Snapdragon 8 Elite Gen 5 Dimensity 9500 3DMark Wild Life Extreme score",
+    "GFXBench smartphone GPU ranking Snapdragon 8 Elite Gen 5 Dimensity 9500",
 ]
 
 
@@ -69,7 +80,14 @@ class BitgoClient:
         self.repo_root = repo_root or Path(__file__).resolve().parents[1]
 
     def create_message(self, prompt: str) -> str:
-        messages: list[dict[str, Any]] = [{"role": "user", "content": prompt}]
+        search_results = run_required_searches()
+        write_search_audit(self.repo_root / "output" / "search-audit.json", search_results)
+        messages: list[dict[str, Any]] = [
+            {
+                "role": "user",
+                "content": prompt + "\n\n已逐个执行的 web_search 搜索结果如下，请只基于这些结果和可核验 URL 生成报告：\n\n" + format_search_results(search_results),
+            }
+        ]
         last_raw = ""
         usages: list[dict[str, Any]] = []
         for _ in range(4):
@@ -120,7 +138,7 @@ class BitgoClient:
             raise RuntimeError(f"bitgo API request failed: {exc.reason}") from exc
 
     def _execute_tool(self, tool_use: dict[str, Any]) -> dict[str, Any]:
-        content = run_web_search(_tool_query(tool_use)) if tool_use.get("name") == "web_search" else "Unsupported tool"
+        content = run_web_search(_tool_query(tool_use)).to_tool_text() if tool_use.get("name") == "web_search" else "Unsupported tool"
         return {"type": "tool_result", "tool_use_id": tool_use.get("id"), "content": content}
 
     def _signed_headers(self) -> dict[str, str]:
@@ -264,7 +282,61 @@ def _has_tool_result(messages: list[dict[str, Any]]) -> bool:
     return False
 
 
-def run_web_search(query: str) -> str:
+@dataclass(frozen=True)
+class SearchResult:
+    query: str
+    ok: bool
+    results: list[dict[str, str]]
+    error: str = ""
+
+    def to_tool_text(self) -> str:
+        if not self.ok:
+            return f"Search query: {self.query}\nSearch failed: {self.error}"
+        if not self.results:
+            return f"Search query: {self.query}\nNo parseable results returned."
+        lines = [f"Search query: {self.query}", "Results:"]
+        for idx, result in enumerate(self.results[:5], start=1):
+            lines.append(f"{idx}. {result['title']}\n   URL: {result['url']}\n   Snippet: {result['snippet']}")
+        return "\n".join(lines)
+
+
+def run_required_searches() -> list[SearchResult]:
+    return [
+        *[run_web_search(keyword) for keyword in [*SEARCH_KEYWORDS, *SUPPLEMENTAL_SEARCH_QUERIES]],
+        fetch_antutu_ranking_table(),
+    ]
+
+
+def format_search_results(search_results: list[SearchResult]) -> str:
+    return "\n\n".join(result.to_tool_text() for result in search_results)
+
+
+def write_search_audit(path: Path, search_results: list[SearchResult]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "required_keywords": SEARCH_KEYWORDS,
+        "supplemental_queries": SUPPLEMENTAL_SEARCH_QUERIES,
+        "searched_keywords": [result.query for result in search_results],
+        "all_required_keywords_searched": [result.query for result in search_results[: len(SEARCH_KEYWORDS)]] == SEARCH_KEYWORDS,
+        "searches": [
+            {
+                "query": result.query,
+                "ok": result.ok,
+                "error": result.error,
+                "results": result.results,
+            }
+            for result in search_results
+        ],
+    }
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def run_web_search(query: str) -> SearchResult:
+    bing_result = run_bing_rss_search(query)
+    if bing_result.ok and bing_result.results:
+        return bing_result
+
     request = urllib.request.Request(
         "https://duckduckgo.com/html/?q=" + quote_plus(query),
         headers={"User-Agent": "Mozilla/5.0 phone-gpu-rank/0.1"},
@@ -273,15 +345,89 @@ def run_web_search(query: str) -> str:
         with urllib.request.urlopen(request, timeout=30) as response:
             html_text = response.read().decode("utf-8", errors="replace")
     except Exception as exc:  # noqa: BLE001
-        return f"Search query: {query}\nSearch failed: {exc}"
+        return SearchResult(query=query, ok=False, results=[], error=str(exc))
     parser = DuckDuckGoParser()
     parser.feed(html_text)
-    if not parser.results:
-        return f"Search query: {query}\nNo parseable results returned."
-    lines = [f"Search query: {query}", "Results:"]
-    for idx, result in enumerate(parser.results[:5], start=1):
-        lines.append(f"{idx}. {result['title']}\n   URL: {result['url']}\n   Snippet: {result['snippet']}")
-    return "\n".join(lines)
+    return SearchResult(query=query, ok=True, results=parser.results[:5])
+
+
+def run_bing_rss_search(query: str) -> SearchResult:
+    request = urllib.request.Request(
+        "https://www.bing.com/search?format=rss&q=" + quote_plus(query),
+        headers={"User-Agent": "Mozilla/5.0 phone-gpu-rank/0.1"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            xml_text = response.read().decode("utf-8", errors="replace")
+        root = ET.fromstring(xml_text)
+    except Exception as exc:  # noqa: BLE001
+        return SearchResult(query=query, ok=False, results=[], error=str(exc))
+
+    results = []
+    for item in root.findall("./channel/item")[:5]:
+        title = (item.findtext("title") or "").strip()
+        url = (item.findtext("link") or "").strip()
+        snippet = (item.findtext("description") or "").strip()
+        if title and url:
+            results.append({"title": title, "url": url, "snippet": snippet})
+    return SearchResult(query=query, ok=True, results=results)
+
+
+def fetch_antutu_ranking_table() -> SearchResult:
+    url = "https://www.antutu.com/web/ranking"
+    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 phone-gpu-rank/0.1"})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            html_text = response.read().decode("utf-8", errors="replace")
+    except Exception as exc:  # noqa: BLE001
+        return SearchResult(query="Direct source: AnTuTu official ranking table", ok=False, results=[], error=str(exc))
+
+    rows = parse_antutu_rows(html_text)
+    results = []
+    for row in rows[:12]:
+        snippet = (
+            f"Rank {row['rank']}: {row['device']}; chip {row['chip']}; "
+            f"CPU {row['cpu']}; GPU {row['gpu']}; MEM {row['mem']}; UX {row['ux']}; Total {row['total']}."
+        )
+        results.append(
+            {
+                "title": f"AnTuTu official ranking #{row['rank']} - {row['device']}",
+                "url": url,
+                "snippet": snippet,
+            }
+        )
+    return SearchResult(query="Direct source: AnTuTu official ranking table", ok=True, results=results)
+
+
+def parse_antutu_rows(html_text: str) -> list[dict[str, str]]:
+    marker = "<tbody"
+    start = html_text.find(marker)
+    if start == -1:
+        return []
+    fragment = html_text[start : start + 50000]
+    text = re.sub(r"<[^>]+>", "\n", fragment)
+    lines = [html_unescape(line).strip() for line in text.splitlines() if html_unescape(line).strip()]
+    rows = []
+    idx = 0
+    while idx + 7 < len(lines):
+        if lines[idx].isdigit() and lines[idx + 3].startswith("| "):
+            rows.append(
+                {
+                    "rank": lines[idx],
+                    "device": lines[idx + 1],
+                    "chip": lines[idx + 2],
+                    "memory": lines[idx + 3].removeprefix("| ").strip(),
+                    "cpu": lines[idx + 4],
+                    "gpu": lines[idx + 5],
+                    "mem": lines[idx + 6],
+                    "ux": lines[idx + 7],
+                    "total": lines[idx + 8] if idx + 8 < len(lines) else "",
+                }
+            )
+            idx += 9
+        else:
+            idx += 1
+    return rows
 
 
 class DuckDuckGoParser(HTMLParser):
