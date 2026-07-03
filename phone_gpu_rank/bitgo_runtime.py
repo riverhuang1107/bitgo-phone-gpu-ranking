@@ -80,33 +80,74 @@ class BitgoClient:
         self.repo_root = repo_root or Path(__file__).resolve().parents[1]
 
     def create_message(self, prompt: str) -> str:
-        search_results = run_required_searches()
-        write_search_audit(self.repo_root / "output" / "search-audit.json", search_results)
         messages: list[dict[str, Any]] = [
             {
                 "role": "user",
-                "content": prompt + "\n\n已逐个执行的 web_search 搜索结果如下，请只基于这些结果和可核验 URL 生成报告：\n\n" + format_search_results(search_results),
+                "content": prompt
+                + "\n\n请先调用 web_search 工具。工具调用后，我会回填已逐个执行的关键词搜索结果；不要在第一轮直接生成最终报告。",
             }
         ]
-        last_raw = ""
         usages: list[dict[str, Any]] = []
+
+        first_payload = json.loads(self._post(self._request_body(messages)))
+        if isinstance(first_payload.get("usage"), dict):
+            usages.append(first_payload["usage"])
+
+        search_results = run_required_searches()
+        write_search_audit(self.repo_root / "output" / "search-audit.json", search_results)
+        search_context = "已逐个执行的 web_search 搜索结果如下，请只基于这些结果和可核验 URL 生成报告：\n\n" + format_search_results(search_results)
+
+        tool_uses = [
+            item
+            for item in first_payload.get("content", [])
+            if isinstance(item, dict) and item.get("type") == "tool_use"
+        ]
+        if tool_uses:
+            messages.append({"role": "assistant", "content": first_payload.get("content", [])})
+            messages.append(
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": item.get("id"),
+                            "content": search_context,
+                        }
+                        for item in tool_uses
+                    ],
+                }
+            )
+        else:
+            messages.append({"role": "user", "content": search_context})
+
         for _ in range(4):
-            last_raw = self._post(self._request_body(messages))
-            payload = json.loads(last_raw)
+            payload = json.loads(self._post(self._request_body(messages)))
             if isinstance(payload.get("usage"), dict):
                 usages.append(payload["usage"])
             if payload.get("stop_reason") != "tool_use":
                 return _with_usage_summary(payload, usages)
-            tool_results = [
-                self._execute_tool(item)
+            followup_tool_uses = [
+                item
                 for item in payload.get("content", [])
                 if isinstance(item, dict) and item.get("type") == "tool_use"
             ]
-            if not tool_results:
+            if not followup_tool_uses:
                 return _with_usage_summary(payload, usages)
             messages.append({"role": "assistant", "content": payload.get("content", [])})
-            messages.append({"role": "user", "content": tool_results})
-        return _with_usage_summary(json.loads(last_raw), usages)
+            messages.append(
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": item.get("id"),
+                            "content": search_context,
+                        }
+                        for item in followup_tool_uses
+                    ],
+                }
+            )
+        return _with_usage_summary(payload, usages)
 
     def _request_body(self, messages: list[dict[str, Any]]) -> dict[str, Any]:
         body = {
@@ -119,7 +160,7 @@ class BitgoClient:
             ),
             "messages": messages,
         }
-        if not _has_tool_result(messages):
+        if not _has_tool_result(messages) and not _has_search_context(messages):
             body["tools"] = self.config.tools or DEFAULT_TOOLS
         return body
 
@@ -293,6 +334,14 @@ def _has_tool_result(messages: list[dict[str, Any]]) -> bool:
             for item in content:
                 if isinstance(item, dict) and item.get("type") == "tool_result":
                     return True
+    return False
+
+
+def _has_search_context(messages: list[dict[str, Any]]) -> bool:
+    for message in messages:
+        content = message.get("content")
+        if isinstance(content, str) and "已逐个执行的 web_search 搜索结果如下" in content:
+            return True
     return False
 
 
