@@ -254,12 +254,19 @@ def _append_usage_section(markdown: str, body: dict[str, Any]) -> str:
         f"- 输出 tokens：{total.get('output_tokens', 0)}",
         f"- 缓存创建输入 tokens：{total.get('cache_creation_input_tokens', 0)}",
         f"- 缓存读取输入 tokens：{total.get('cache_read_input_tokens', 0)}",
-        f"- 消耗金额（10^-8 缩放）：{total.get('consume_amount', 0)}",
-        f"- 剩余额度（10^-8 缩放）：{total.get('balance', '未知')}",
+        f"- 实际消耗金额：{_format_scaled_amount(total.get('consume_amount'))}（原始值：{total.get('consume_amount', 0)}，缩放：10^-8）",
+        f"- 实际剩余额度：{_format_scaled_amount(total.get('balance'))}（原始值：{total.get('balance', '未知')}，缩放：10^-8）",
         f"- 输入单价：{total.get('input_token_unit_price', '未知')}",
         f"- 输出单价：{total.get('output_token_unit_price', '未知')}",
     ]
     return markdown.rstrip() + "\n" + "\n".join(lines)
+
+
+def _format_scaled_amount(value: Any) -> str:
+    if not isinstance(value, int):
+        return "未知"
+    whole, fractional = divmod(value, 100_000_000)
+    return f"{whole}.{fractional:08d}"
 
 
 def _tool_query(tool_use: dict[str, Any]) -> str:

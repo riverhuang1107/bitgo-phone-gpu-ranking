@@ -10,6 +10,7 @@ from phone_gpu_rank.bitgo_runtime import (
     SUPPLEMENTAL_SEARCH_QUERIES,
     SearchResult,
     BitgoConfig,
+    _format_scaled_amount,
     parse_antutu_rows,
     parse_model_text,
     write_search_audit,
@@ -29,6 +30,10 @@ class ResponseTests(unittest.TestCase):
     def test_parse_bitgo_content_array(self) -> None:
         raw = json.dumps({"body": {"content": [{"type": "text", "text": "# Report"}]}})
         self.assertEqual(parse_model_text(raw), "# Report")
+
+    def test_format_scaled_amount(self) -> None:
+        self.assertEqual(_format_scaled_amount(2223900), "0.02223900")
+        self.assertEqual(_format_scaled_amount(487505960), "4.87505960")
 
 
 class RenderTests(unittest.TestCase):
