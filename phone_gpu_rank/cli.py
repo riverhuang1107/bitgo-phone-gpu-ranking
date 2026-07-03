@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .bitgo import BitgoClient, BitgoConfig, build_report_prompt, parse_model_text
+from .bitgo_runtime import BitgoClient, BitgoConfig, build_report_prompt, parse_model_text
 from .mail import create_mail_assets
 from .render import OUTPUT_BASENAME, write_outputs
 

@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from phone_gpu_rank.bitgo import BitgoConfig, parse_model_text
+from phone_gpu_rank.bitgo_runtime import BitgoConfig, parse_model_text
 from phone_gpu_rank.cli import main
 from phone_gpu_rank.render import OUTPUT_BASENAME, render_html
 
