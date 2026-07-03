@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>bitgo Agent Software Reasoning Product Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0b1324;
+      --muted: #53627a;
+      --paper: #f7fbff;
+      --soft: #eef6ff;
+      --line: #c9d9ef;
+      --blue: #0069ff;
+      --blue-dark: #003ea8;
+      --blue-soft: #dcecff;
+      --black: #06111f;
+      --white: #ffffff;
+      --code: #171717;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+    }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(0, 105, 255, 0.14), rgba(247, 251, 255, 0) 340px),
+        radial-gradient(circle at top right, rgba(0, 105, 255, 0.16), transparent 360px);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      background: rgba(247, 251, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201, 217, 239, 0.72);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--ink);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 56px 24px 88px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+      gap: 34px;
+      align-items: stretch;
+      margin-bottom: 46px;
+    }
+
+    .hero-copy {
+      padding: 30px 0 20px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 7px 12px;
+      border: 1px solid var(--blue);
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(40px, 7vw, 86px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .hero-card {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 380px;
+      padding: 26px;
+      border: 2px solid var(--black);
+      border-radius: 8px;
+      background: var(--black);
+      color: var(--white);
+      box-shadow: 12px 12px 0 var(--blue);
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      color: #8fc2ff;
+      font-size: 24px;
+      border: 0;
+      padding: 0;
+    }
+
+    .hero-card p {
+      color: #e9f3ff;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      padding: 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      color: #8fc2ff;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: #c5d8f2;
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .section.dark {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .section.dark p,
+    .section.dark li {
+      color: #e9f3ff;
+    }
+
+    .section.dark h2,
+    .section.dark h3 {
+      color: #8fc2ff;
+    }
+
+    .section h2 {
+      margin: 0 0 16px;
+      padding: 0;
+      border: 0;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .section h3 {
+      margin: 24px 0 10px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tile {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow-wrap: anywhere;
+    }
+
+    .tile strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .tile span {
+      color: #34445c;
+    }
+
+    .coin-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .coin-logo {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(6, 17, 31, 0.12);
+    }
+
+    .coin-logo.eth {
+      background: #eef2ff;
+      color: #627eea;
+    }
+
+    .coin-logo.ltc {
+      background: #eef4ff;
+      color: #345d9d;
+    }
+
+    .coin-logo.btc {
+      background: #fff4df;
+      color: #f7931a;
+    }
+
+    .section.dark .tile {
+      border-color: #c9d9ef;
+      background: #f4f9ff;
+      color: var(--ink);
+    }
+
+    .section.dark .tile strong {
+      color: var(--ink);
+    }
+
+    .section.dark .tile span {
+      color: #34445c;
+    }
+
+    .section.dark .tile code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .section.dark .callout {
+      color: var(--ink);
+    }
+
+    .section.dark .callout code {
+      background: var(--white);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .section.dark .step-list li {
+      color: var(--ink);
+    }
+
+    .section.dark .step-list li code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .step-list {
+      counter-reset: steps;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: steps;
+      min-width: 0;
+      min-height: 154px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .step-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      display: inline-flex;
+      margin-bottom: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .table-scroll table {
+      min-width: 980px;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--black);
+      color: #8fc2ff;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      border-radius: 5px;
+      background: rgba(0, 105, 255, 0.14);
+      color: var(--blue-dark);
+      padding: 0.16em 0.36em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .dark code,
+    .hero-card code {
+      background: rgba(0, 105, 255, 0.18);
+      color: #8fc2ff;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 18px;
+      border: 1px solid rgba(0, 105, 255, 0.34);
+      border-radius: 8px;
+      background: var(--code);
+      color: #f4f9ff;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    pre.wrap {
+      overflow-x: visible;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    pre.wrap code {
+      white-space: inherit;
+      overflow-wrap: anywhere;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid #cc3a3a;
+      background: #fff0f0;
+      border-radius: 8px;
+      color: #7c1d1d;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .step-list,
+      .grid,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 34px 14px 56px;
+      }
+
+      .section,
+      .hero-card {
+        padding: 22px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav">
+      <div class="brand"><span class="brand-mark">b</span><span>bitgo</span></div>
+      <div class="nav-links" aria-label="Page navigation">
+        <a href="#highlights">Highlights</a>
+        <a href="#deposit">Deposit</a>
+        <a href="#wallets">Wallets</a>
+        <a href="#api-request">API</a>
+        <a href="#models">Models</a>
+        <a href="#connectivity">Connectivity</a>
+        <a href="#signing">Signing</a>
+        <a href="#example">Example</a>
+        <a href="#security">Security</a>
+      </div>
+    </nav>
+
+    <main>
+      <header class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">Agent software reasoning</div>
+          <h1>bitgo</h1>
+          <p class="lead">bitgo provides wallet-based billing, signed authorization, and reasoning-token consumption for agents while they build software, and for the software those agents create when it needs embedded model inference. It is not a single project-filtering tool; it is the payment and authentication layer that lets agent workflows and application runtime reasoning connect to model services reliably.</p>
+        </div>
+        <aside class="hero-card" aria-label="Product summary">
+          <div>
+            <h2>Designed for agents and embedded reasoning</h2>
+            <p>Humans confirm the chain, address, amount, and authorization data; agents create wallet-aware signed requests and connect reasoning capability into development or product runtime flows.</p>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong>Wallet</strong><span>Signed identity</span></div>
+            <div class="metric"><strong>Token</strong><span>Reasoning spend</span></div>
+            <div class="metric"><strong>Agent</strong><span>Software workflows</span></div>
+          </div>
+        </aside>
+      </header>
+
+      <section class="section" id="highlights">
+        <h2>1. Product Highlights</h2>
+        <div class="grid">
+          <div class="tile"><strong>Payment Tool for the Agent Era</strong><span>BitGo provides decentralized virtual-asset payment capabilities for the Agent era, enabling AI agents, automation programs, and developer applications to consume resources safely and verifiably through cryptocurrency wallets. Instead of relying on a traditional account-balance system, it centers payment on wallet addresses, on-chain identity, and signed authorization, returning payment control to users and programs themselves.</span></div>
+          <div class="tile"><strong>Wallet as Payment Identity</strong><span>In BitGo, ETH, BTC, LTC, and other cryptocurrency wallets are not only asset holders. They also act as authorization credentials for reasoning APIs, model services, data services, and other digital resources. Each request uses a private-key signature to confirm identity and authorize spending, so the service does not need to custody user private keys or depend on centralized usernames and passwords.</span></div>
+          <div class="tile"><strong>Secure and Transparent Virtual-asset Spending</strong><span>BitGo gives every resource-consumption event a clear source, quota, and record. Users can see which wallet initiated the request, how much balance was consumed, which fund ID it maps to, and complete <code>usage</code> details for token counts, unit prices, consumed amount, and remaining balance. This keeps automated agent payments auditable and verifiable.</span></div>
+          <div class="tile"><strong>From Token Spend to the Agent Economy</strong><span>Token consumption is only the starting point for BitGo. The same wallet-signature and payment mechanism can expand to model calls, tool calls, data purchases, API subscriptions, compute rental, automated trading, task bounties, and cross-platform digital-service settlement, becoming a payment layer that connects wallets, assets, services, and agent-driven consumption.</span></div>
+        </div>
+      </section>
+
+      <section class="section dark" id="deposit">
+        <h2>2. Cryptocurrency Deposit Flow</h2>
+        <p>Deposits are initiated by a human from an exchange or centralized wallet. The agent can generate instructions and verify parameters, but it must not guess the chain, amount, or receiving address.</p>
+        <div class="grid three">
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo eth" viewBox="0 0 34 34" role="img" aria-label="ETH logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor" opacity="0.14"></circle>
+                <path d="M17 5.5 10 17l7 4.1 7-4.1L17 5.5Z" fill="currentColor"></path>
+                <path d="m10 18.4 7 9.9 7-9.9-7 4.1-7-4.1Z" fill="currentColor" opacity="0.72"></path>
+                <path d="m17 13.9-7 3.1 7 4.1 7-4.1-7-3.1Z" fill="#ffffff" opacity="0.34"></path>
+              </svg>
+              <strong>Ethereum ETH</strong>
+            </div>
+            <span>Official receiving address: <code>0xa52d609f23f110d588606a9c82c7c53a0143b6b0</code><br>Network: ETH / ERC-20<br>Estimated arrival: 5 - 15 minutes</span>
+          </div>
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo ltc" viewBox="0 0 34 34" role="img" aria-label="LTC logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor"></circle>
+                <text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">Ł</text>
+              </svg>
+              <strong>Litecoin LTC</strong>
+            </div>
+            <span>Official receiving address: <code>MUVwWW6MbBcn9oPnuRU1iEmVAf8JgLgox7</code><br>Network: LTC / Litecoin<br>Estimated arrival: 10 - 25 minutes</span>
+          </div>
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo btc" viewBox="0 0 34 34" role="img" aria-label="BTC logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor"></circle>
+                <text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">₿</text>
+              </svg>
+              <strong>Bitcoin BTC</strong>
+            </div>
+            <span>Official receiving address: <code>bc1p8fhgdj7hz234rmhff8nrw8zrq6hpft3m4dp7c6749weteq0rkhksmyckre</code><br>Network: BTC-Taproot<br>Estimated arrival: 30 - 40 minutes</span>
+          </div>
+        </div>
+        <ol class="step-list">
+          <li>Choose the supported chain, such as BTC, LTC, or ETH, according to the service registration.</li>
+          <li>Confirm the official receiving address and network with a human operator.</li>
+          <li>Transfer the required amount from the exchange or centralized wallet.</li>
+          <li>Wait for on-chain confirmations and associate the deposit with <code>money</code> and <code>money_id</code>.</li>
+          <li>Use the registered wallet address, amount, and amount ID to sign API calls.</li>
+        </ol>
+        <p class="callout">If the wrong chain or address is used, the agent cannot automatically recover the funds. Human confirmation remains mandatory for deposit-critical fields.</p>
+      </section>
+
+      <section class="section" id="wallets">
+        <h2>3. On-chain Address and Wallet Creation</h2>
+        <p>bitgo identifies users by their on-chain address. One address can correspond to multiple wallets so different agents, software projects, environments, or business modules can isolate reasoning-token consumption.</p>
+        <div class="grid">
+          <div class="tile"><strong>Human-provided data</strong><span>Chain type such as <code>ltc</code>, <code>btc</code>, or <code>eth</code>, wallet address, deposit amount or denomination, <code>money_id</code>, and a private key injected through a secure channel.</span></div>
+          <div class="tile"><strong>Agent actions</strong><span>Create or configure wallet records, generate signed requests, test reasoning API connectivity, and connect model calls into development workflows or application runtime logic.</span></div>
+        </div>
+        <p class="callout">The chain type, amount, and authorization data must be explicitly provided by a human. Agents should not infer business amounts from address appearance, and real private keys must never be written into repositories, documentation, logs, or sample code.</p>
+      </section>
+
+      <section class="section" id="api-request">
+        <h2>4. Reasoning API Endpoint and Parameters</h2>
+        <p>bitgo calls the external reasoning API through wallet-signed HTTP requests. Agents can place task context into the request body while developing software, and applications can use the same API when they need embedded model inference.</p>
+        <table>
+          <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>endpoint</code></td><td><code>https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages</code></td><td>Reasoning API endpoint</td></tr>
+            <tr><td><code>method</code></td><td><code>POST</code></td><td>Sends a JSON request body</td></tr>
+            <tr><td><code>Content-Type</code></td><td><code>application/json</code></td><td>Fixed JSON content type</td></tr>
+            <tr><td><code>X-Params</code></td><td><code>BASE64_ENCODED_WALLET_PARAMS</code></td><td>Wallet-signature authentication parameters generated by the signer</td></tr>
+            <tr><td><code>X-Nonce</code></td><td><code>RANDOM_NONCE</code></td><td>Random string used by the interface-level ECDSA signature</td></tr>
+            <tr><td><code>X-Signature</code></td><td><code>ECDSA_SIGNATURE_HEX</code></td><td>ASN.1/DER hex signature over <code>X-Params + X-Nonce</code></td></tr>
+            <tr><td><code>X-Public-Key</code></td><td><code>ECDSA_PUBLIC_KEY_HEX</code></td><td>Local ECDSA public key DER hex for server-side verification</td></tr>
+          </tbody>
+        </table>
+        <h3>Request Body Parameters</h3>
+        <table>
+          <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>model</code></td><td>string</td><td>Model ID. Available models are listed in the next section.</td></tr>
+            <tr><td><code>max_tokens</code></td><td>number</td><td>Maximum number of output tokens. Connectivity tests can use a small value.</td></tr>
+            <tr><td><code>system</code></td><td>string</td><td>Optional. Defines model role, constraints, and output format.</td></tr>
+            <tr><td><code>messages</code></td><td>array</td><td>Conversation messages, commonly <code>{"role":"user","content":"..."}</code>.</td></tr>
+            <tr><td><code>stream</code></td><td>boolean</td><td>Optional. The examples use <code>false</code> for a single response.</td></tr>
+          </tbody>
+        </table>
+        <h3>BTC Wallet-signed Request Example</h3>
+        <pre><code class="language-json">{
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;url&quot;: &quot;https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages&quot;,
+  &quot;headers&quot;: {
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+    &quot;X-Params&quot;: &quot;eyJ3YWxsZXRfYWRkcmVzcyI6ImJjMXBya3g0bXI2ejZsendwZmZucmZrNW5oOGUwNnVrOGFqZ2V1NThsdXdnOGxyYXA4ZDdyenVzYXMzNjR6IiwibW9uZXkiOiI2IiwibW9uZXlfaWQiOiIyMDI2MDcwMjAwMiIsInNpZ25hdHVyZSI6InVjZHI2WWQzRjREakpPNGNvaWVTL1QveUpJYXJXSklmUkhFeURVVTJwUmpYN3Aza2xmLzhwd296VUhLTkx1NXZEVWhVWnlHUjNKbGtldk5zRlZXTHJ3PT0ifQ==&quot;,
+    &quot;X-Nonce&quot;: &quot;d84269e89b48fc447874442a3f57e944&quot;,
+    &quot;X-Signature&quot;: &quot;3045022041a63e543098dc54b4bcea896695f4266e321d76e1fe5ba0b31993b8c1d6d220022100cb0c2b11c3eadd65c3f469dca8ee6e103884c98a7f44eb39c36b3c9cc0721d47&quot;,
+    &quot;X-Public-Key&quot;: &quot;3059301306072a8648ce3d020106082a8648ce3d030107034200043fffbc2b10dbbea8900bd38b48100c48e627bd12edb23b055e672278f04e09d6f3b00e7f8b21819f9157a9e69704bac5415dedd4d9e6d21a8f6d219f3db7633e&quot;
+  },
+  &quot;body&quot;: {
+    &quot;messages&quot;: [
+      {
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;Output the top 5 hottest AI open-source projects on GitHub&quot;
+      }
+    ],
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;stream&quot;: false
+  }
+}</code></pre>
+        <h3>API Response Example</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [
+      {
+        &quot;text&quot;: &quot;# Top 5 Hottest AI Open-Source Projects on GitHub\n\nHere are five of the most popular and trending AI open-source projects (as of early 2025):\n\n## 1. **Meta LLaMA (Large Language Model Meta AI)**\n- **⭐ Stars:** 70k+\n- **Description:** Meta&#x27;s open-weight large language model series, enabling the community to build, fine-tune, and deploy powerful LLMs.\n- **Repo:** `meta-llama/llama`\n\n## 2. **LangChain**\n- **⭐ Stars:** 95k+\n- **Description:** A framework for building applications powered by LLMs — supports chaining prompts, tool usage, RAG, agents, and more.\n- **Repo:** `langchain-ai/langchain`\n\n## 3. **Stable Diffusion (by Stability AI)**\n- **⭐ Stars:** 70k+\n- **Description:** A latent text-to-image diffusion model capable of generating high-quality images from text prompts.\n- **Repo:** `CompVis/stable-diffusion` / `Stability-AI/stablediffusion`\n\n## 4. **Ollama**\n- **⭐ Stars:** 100k+\n- **Description:** Run large language models locally with a simple interface. Supports LLaMA, Mistral, Gemma, and many more models.\n- **Repo:** `ollama/ollama`\n\n## 5. **Open Interpreter**\n- **⭐ Stars:** 55k+\n- **Description:** Lets LLMs run code locally — acts like an open-source version of ChatGPT&#x27;s Code Interpreter that runs on your machine.\n- **Repo:** `OpenInterpreter/open-interpreter`\n\n---\n\n&gt; **Honorable Mentions:** DeepSeek, Hugging Face Transformers, vLLM, GPT4All, LocalAI, and AutoGPT.\n\n⚠️ *Note: Star counts and rankings shift rapidly. Check [GitHub Trending](https://github.com/trending) for real-time data.*&quot;,
+        &quot;type&quot;: &quot;text&quot;
+      }
+    ],
+    &quot;id&quot;: &quot;msg_42a92b4922e84cbcb4011271bb41407a&quot;,
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;type&quot;: &quot;message&quot;,
+    &quot;usage&quot;: {
+      &quot;balance&quot;: 492203977,
+      &quot;cache_creation&quot;: {
+        &quot;ephemeral_1h_input_tokens&quot;: 0,
+        &quot;ephemeral_5m_input_tokens&quot;: 0
+      },
+      &quot;cache_creation_input_tokens&quot;: 0,
+      &quot;cache_read_input_tokens&quot;: 0,
+      &quot;consume_amount&quot;: 1278560,
+      &quot;hash&quot;: &quot;MzA0NjAyMjEwMGI5ZTdhNTI4ZWI2NjBmOWIyY2Q4MWM2NWFiMDY1NWFhZDkyMWI4OTczNjg3YmE0ODkyZTliYjMzNTRmNDdhNzMwMjIxMDBmMmQ2OTkyNjIyYzAzNDQzYjM4NzUyYmQ2YzM3NDhlYzg5ZTJjMDU4NDdlMWM5MTc1NWRhMmY0NjY4OGY1YTU4&quot;,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;input_tokens&quot;: 22,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;output_tokens&quot;: 503
+    }
+  }
+}</code></pre>
+        <h3>Usage Fields</h3>
+        <p>After each external reasoning API request completes, the server returns the complete <code>usage</code> JSON inside the response. The complete response example above already includes <code>usage</code>, so this section does not repeat a standalone usage JSON block.</p>
+        <p>The monetary fields in <code>usage</code> are integer-scaled values returned by the server. Convert them to actual amounts as follows:</p>
+        <ul>
+          <li>The actual <code>input_token_unit_price</code> and <code>output_token_unit_price</code> values are the field value multiplied by <code>10^-5</code>, and the unit price is the price per 1000 tokens.</li>
+          <li>The actual <code>consume_amount</code> value is the field value multiplied by <code>10^-8</code>.</li>
+          <li>The actual <code>balance</code> value is the field value multiplied by <code>10^-8</code>.</li>
+        </ul>
+        <p>If the server response has no <code>usage</code> field, the CLI prints <code>&quot;usage&quot;: null</code>; it does not estimate or fabricate usage.</p>
+        <p class="callout">This example comes from a real BTC Taproot wallet-signed request. <code>X-Nonce</code>, <code>X-Signature</code>, the wallet signature inside <code>X-Params</code>, balance, hash, and token counts change on each call. Private keys must not be written into docs, repositories, or logs.</p>
+      </section>
+
+      <section class="section" id="models">
+        <h2>5. Supported Models</h2>
+        <p>The reasoning API selects a model through the <code>model</code> field. Agents and applications can choose models based on quality, latency, and cost. Prices are displayed in USD per 1,000,000 tokens.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Model ID</th><th>Model Name</th><th>Provider</th><th>Input Price</th><th>Output Price</th></tr></thead>
+            <tbody>
+<tr><td><code>deepseek-v3</code></td><td>DeepSeek-V3</td><td>DeepSeek</td><td>0.28</td><td>1.11</td></tr>
+              <tr><td><code>deepseek-v3.1</code></td><td>DeepSeek-V3.1</td><td>DeepSeek</td><td>0.56</td><td>1.67</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-flash</code></td><td>DeepSeek-V4-Flash</td><td>DeepSeek</td><td>0.14</td><td>0.28</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-pro</code></td><td>DeepSeek-V4-Pro</td><td>DeepSeek</td><td>1.67</td><td>3.33</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-exp</code></td><td>DeepSeek/DeepSeek-V3.2-Exp</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-exp-thinking</code></td><td>DeepSeek/DeepSeek-V3.2-Exp-Thinking</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-251201</code></td><td>Deepseek/DeepSeek-V3.2</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>claude-4.1-opus</code></td><td>Claude 4.1 Opus</td><td>Anthropic</td><td>15</td><td>75.6</td></tr>
+              <tr><td><code>claude-4.5-haiku</code></td><td>Claude 4.5 Haiku</td><td>Anthropic</td><td>5</td><td>5.04</td></tr>
+              <tr><td><code>claude-4.5-opus</code></td><td>Claude 4.5 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.5-sonnet</code></td><td>Claude 4.5 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>claude-4.6-opus</code></td><td>Claude 4.6 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.6-sonnet</code></td><td>Claude 4.6 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>anthropic/claude-4.7-opus</code></td><td>Claude 4.7 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>anthropic/claude-4.8-opus</code></td><td>Claude 4.8 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>MiniMax-M1</code></td><td>MiniMax M1</td><td>Minimax</td><td>0.56</td><td>2.22</td></tr>
+              <tr><td><code>minimax/minimax-m2.5</code></td><td>Minimax/Minimax-M2.5</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m2.5-highspeed</code></td><td>Minimax/Minimax-M2.5 Highspeed</td><td>Minimax</td><td>0.58</td><td>2.33</td></tr>
+              <tr><td><code>minimax/minimax-m2.7</code></td><td>Minimax/Minimax-M2.7</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m3</code></td><td>Minimax/Minimax-M3</td><td>Minimax</td><td>0.29</td><td>11.67</td></tr>
+              <tr><td><code>openai/gpt-5</code></td><td>OpenAI/GPT-5</td><td>OpenAI</td><td>1.26</td><td>10.08</td></tr>
+              <tr><td><code>openai/gpt-5-nano</code></td><td>OpenAI/GPT-5 Nano</td><td>OpenAI</td><td>0.0504</td><td>0.4032</td></tr>
+              <tr><td><code>openai/gpt-5.2</code></td><td>OpenAI/GPT-5.2</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5-mini</code></td><td>Openai/GPT-5 Mini</td><td>OpenAI</td><td>0.252</td><td>2.016</td></tr>
+              <tr><td><code>openai/gpt-5-pro</code></td><td>Openai/GPT-5 Pro</td><td>OpenAI</td><td>15.12</td><td>120.96</td></tr>
+              <tr><td><code>openai/gpt-5.2-codex</code></td><td>Openai/GPT-5.2 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.3-codex</code></td><td>Openai/GPT-5.3 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.4</code></td><td>Openai/GPT-5.4</td><td>OpenAI</td><td>2.52</td><td>15.12</td></tr>
+              <tr><td><code>openai/gpt-5.4-mini</code></td><td>Openai/GPT-5.4 Mini</td><td>OpenAI</td><td>0.756</td><td>4.536</td></tr>
+              <tr><td><code>openai/gpt-5.4-nano</code></td><td>Openai/GPT-5.4 Nano</td><td>OpenAI</td><td>0.2016</td><td>1.26</td></tr>
+              <tr><td><code>openai/gpt-5.4-pro</code></td><td>Openai/GPT-5.4 Pro</td><td>OpenAI</td><td>30.24</td><td>181.44</td></tr>
+              <tr><td><code>openai/gpt-5.5</code></td><td>Openai/GPT-5.5</td><td>OpenAI</td><td>5.04</td><td>30.24</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.5</code></td><td>Moonshotai/Kimi-K2.5</td><td>Moonshot-Kimi</td><td>0.56</td><td>2.92</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.6</code></td><td>Moonshotai/Kimi-K2.6</td><td>Moonshot-Kimi</td><td>0.9</td><td>3.75</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="callout"><code>model</code> is required. The examples use <code>claude-4.6-opus</code>.</p>
+      </section>
+
+      <section class="section dark" id="connectivity">
+        <h2>6. Multi-chain Wallet Generation and Connectivity Tests</h2>
+        <p>Cryptocurrency signing is handled by the Go signer. Agents or applications call the signer to assemble <code>X-Params</code>, then use a local ECDSA P-256 private key to sign <code>X-Params + X-Nonce</code>, and finally send the complete reasoning API request. Wallet generation and signing behavior differ by chain:</p>
+        <div class="grid">
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo ltc" viewBox="0 0 34 34" role="img" aria-label="LTC logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor"></circle>
+                <text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">Ł</text>
+              </svg>
+              <strong>LTC</strong>
+            </div>
+            <span>Generate a Litecoin mainnet wallet, export the address and WIF private key, and configure <code>wallet_chain = "ltc"</code>. Normal addresses use compact ECDSA; Taproot addresses such as <code>ltc1p...</code> use Schnorr signing. LTC has been verified with real requests, but the chain type must still be explicitly provided by a human.</span>
+          </div>
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo btc" viewBox="0 0 34 34" role="img" aria-label="BTC logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor"></circle>
+                <text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">₿</text>
+              </svg>
+              <strong>BTC</strong>
+            </div>
+            <span>Generate a Bitcoin mainnet wallet, export the address and WIF private key, and configure <code>wallet_chain = "btc"</code>. Normal addresses such as <code>1...</code>, <code>3...</code>, and <code>bc1q...</code> use compact ECDSA; Taproot addresses such as <code>bc1p...</code> use Schnorr signing with the tweaked private key.</span>
+          </div>
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo eth" viewBox="0 0 34 34" role="img" aria-label="ETH logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor" opacity="0.14"></circle>
+                <path d="M17 5.5 10 17l7 4.1 7-4.1L17 5.5Z" fill="currentColor"></path>
+                <path d="m10 18.4 7 9.9 7-9.9-7 4.1-7-4.1Z" fill="currentColor" opacity="0.72"></path>
+                <path d="m17 13.9-7 3.1 7 4.1 7-4.1-7-3.1Z" fill="#ffffff" opacity="0.34"></path>
+              </svg>
+              <strong>ETH</strong>
+            </div>
+            <span>Generate an Ethereum wallet, export the <code>0x...</code> address and hex private key, configure <code>wallet_chain = "eth"</code>, and let the signer generate authorization parameters using the Ethereum signing method.</span>
+          </div>
+        </div>
+        <pre><code>curl -X POST "https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages" \
+  -H "Content-Type: application/json" \
+  -H "X-Params: BASE64_ENCODED_WALLET_PARAMS" \
+  -H "X-Nonce: RANDOM_NONCE" \
+  -H "X-Signature: ECDSA_SIGNATURE_HEX" \
+  -H "X-Public-Key: ECDSA_PUBLIC_KEY_HEX" \
+  --data-raw '{
+    "model": "claude-4.6-opus",
+    "max_tokens": 1024,
+    "stream": false,
+    "messages": [
+      {
+        "role": "user",
+        "content": "hello world"
+      }
+    ]
+  }'</code></pre>
+        <p class="callout">After connectivity testing succeeds, wallet signing, <code>X-Params</code> assembly, interface-level ECDSA signing, model selection, and reasoning API access are wired correctly. Agents can reuse the same path for code generation, review, data analysis, business automation, or embedded application reasoning tasks.</p>
+      </section>
+
+      <section class="section" id="signing">
+        <h2>7. Wallet-signed Reasoning API Calls</h2>
+        <p>The reasoning API uses the wallet business signature in <code>X-Params</code>, plus <code>X-Nonce</code>, <code>X-Signature</code>, and <code>X-Public-Key</code> for interface-level ECDSA signing. The wallet-signature message is the direct concatenation of wallet address, amount, and amount ID:</p>
+        <pre><code>${wallet_address}${money}${money_id}</code></pre>
+        <h3>X-Params Signing Process</h3>
+        <ol>
+          <li>A human provides <code>wallet_chain</code>, <code>wallet_address</code>, <code>money</code>, <code>money_id</code>, and a securely injected private key.</li>
+          <li>The agent concatenates <code>wallet_address + money + money_id</code> as the wallet-signature message.</li>
+          <li>The signer hashes the message with <code>sha256.Sum256</code> to get a 32-byte digest.</li>
+          <li><code>ltc</code> decodes the Litecoin mainnet WIF private key and chooses the signing method by address type: normal addresses use <code>btcec/v2/ecdsa.SignCompact</code>, while Taproot addresses such as <code>ltc1p...</code> use <code>btcec/v2/schnorr.Sign</code>.</li>
+          <li><code>btc</code> decodes the Bitcoin mainnet WIF private key. Normal addresses such as <code>1...</code>, <code>3...</code>, and <code>bc1q...</code> use <code>btcec/v2/ecdsa.SignCompact</code>. Taproot addresses such as <code>bc1p...</code> first call <code>txscript.TweakTaprootPrivKey(*privateKey, []byte{})</code> to tweak the internal private key, then use <code>btcec/v2/schnorr.Sign</code>.</li>
+          <li><code>eth</code> uses an Ethereum hex private key, with or without the <code>0x</code> prefix, and calls <code>github.com/ethereum/go-ethereum/crypto.Sign</code>.</li>
+          <li>Base64-encode the wallet signature and assemble a JSON object with <code>wallet_address</code>, <code>money</code>, <code>money_id</code>, and <code>signature</code>.</li>
+          <li>Base64-encode that JSON object and place it in the HTTP <code>X-Params</code> header.</li>
+          <li>Generate a random <code>X-Nonce</code>, concatenate <code>X-Params + X-Nonce</code>, and hash it with SHA-256.</li>
+          <li>Use the local ECDSA P-256 private key to generate an ASN.1/DER signature hex, write it to <code>X-Signature</code>, and write the local ECDSA public key DER hex to <code>X-Public-Key</code>.</li>
+        </ol>
+        <table>
+          <thead><tr><th>Field</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>wallet_address</code></td><td>On-chain address, also the key identity used by bitgo</td></tr>
+            <tr><td><code>money</code></td><td>Human-provided amount or denomination; agents should not guess it</td></tr>
+            <tr><td><code>money_id</code></td><td>Amount record or wallet record ID used by the server</td></tr>
+            <tr><td><code>signature</code></td><td>Base64 string generated by signing <code>wallet_address + money + money_id</code></td></tr>
+          </tbody>
+        </table>
+        <p>After the signature fields are assembled as JSON, the JSON string is base64-encoded into the request header, and the interface-level request signature is generated:</p>
+        <pre><code>{
+  "wallet_address": "YOUR_WALLET_ADDRESS",
+  "money": "YOUR_WALLET_MONEY",
+  "money_id": "YOUR_MONEY_ID",
+  "signature": "BASE64_SIGNATURE"
+}</code></pre>
+<pre><code>Content-Type: application/json
+X-Params: BASE64_ENCODED_WALLET_PARAMS
+X-Nonce: RANDOM_NONCE
+X-Signature: ECDSA_SIGNATURE_HEX
+X-Public-Key: ECDSA_PUBLIC_KEY_HEX</code></pre>
+        <p>The reasoning request body follows the Anthropic Messages style. Agents can place code context, data samples, business instructions, or runtime tasks in <code>messages</code>.</p>
+        <pre><code>{
+  "model": "claude-4.6-opus",
+  "max_tokens": 4096,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Run a model reasoning task based on the current business context of the software."
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section class="section dark" id="example">
+        <h2>8. Complete Example: GitHub Hot AI Project Query</h2>
+        <p>This example shows a complete bitgo call path. It does not mean bitgo is limited to project filtering; any agent-built application can replace the input data, prompt, and output expectations.</p>
+        <p class="callout">The GitHub AI-project filtering scenario is only a demonstration of the complete deposit, wallet creation, signed call, reasoning consumption, and structured-response flow. bitgo is not limited to repository filtering.</p>
+        <ol class="step-list">
+          <li>A human completes the on-chain deposit and confirms the balance.</li>
+          <li>A human provides chain type, wallet address, amount, <code>money_id</code>, and a securely injected private key.</li>
+          <li>The agent creates wallet configuration, generates <code>X-Params</code>, and creates <code>X-Nonce</code>, <code>X-Signature</code>, and <code>X-Public-Key</code>.</li>
+          <li>The agent calls the reasoning API to answer the requested AI open-source project query.</li>
+          <li>The server returns content and <code>usage</code>; the system records token consumption.</li>
+        </ol>
+        <h3>BTC Wallet-signed Request</h3>
+        <pre><code class="language-json">{
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;url&quot;: &quot;https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages&quot;,
+  &quot;headers&quot;: {
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+    &quot;X-Params&quot;: &quot;eyJ3YWxsZXRfYWRkcmVzcyI6ImJjMXBya3g0bXI2ejZsendwZmZucmZrNW5oOGUwNnVrOGFqZ2V1NThsdXdnOGxyYXA4ZDdyenVzYXMzNjR6IiwibW9uZXkiOiI2IiwibW9uZXlfaWQiOiIyMDI2MDcwMjAwMiIsInNpZ25hdHVyZSI6InVjZHI2WWQzRjREakpPNGNvaWVTL1QveUpJYXJXSklmUkhFeURVVTJwUmpYN3Aza2xmLzhwd296VUhLTkx1NXZEVWhVWnlHUjNKbGtldk5zRlZXTHJ3PT0ifQ==&quot;,
+    &quot;X-Nonce&quot;: &quot;d84269e89b48fc447874442a3f57e944&quot;,
+    &quot;X-Signature&quot;: &quot;3045022041a63e543098dc54b4bcea896695f4266e321d76e1fe5ba0b31993b8c1d6d220022100cb0c2b11c3eadd65c3f469dca8ee6e103884c98a7f44eb39c36b3c9cc0721d47&quot;,
+    &quot;X-Public-Key&quot;: &quot;3059301306072a8648ce3d020106082a8648ce3d030107034200043fffbc2b10dbbea8900bd38b48100c48e627bd12edb23b055e672278f04e09d6f3b00e7f8b21819f9157a9e69704bac5415dedd4d9e6d21a8f6d219f3db7633e&quot;
+  },
+  &quot;body&quot;: {
+    &quot;messages&quot;: [
+      {
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;Output the top 5 hottest AI open-source projects on GitHub&quot;
+      }
+    ],
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;stream&quot;: false
+  }
+}</code></pre>
+        <h3>BTC Wallet-signed Response</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [
+      {
+        &quot;text&quot;: &quot;# Top 5 Hottest AI Open-Source Projects on GitHub\n\nHere are five of the most popular and trending AI open-source projects (as of early 2025):\n\n## 1. **Meta LLaMA (Large Language Model Meta AI)**\n- **⭐ Stars:** 70k+\n- **Description:** Meta&#x27;s open-weight large language model series, enabling the community to build, fine-tune, and deploy powerful LLMs.\n- **Repo:** `meta-llama/llama`\n\n## 2. **LangChain**\n- **⭐ Stars:** 95k+\n- **Description:** A framework for building applications powered by LLMs — supports chaining prompts, tool usage, RAG, agents, and more.\n- **Repo:** `langchain-ai/langchain`\n\n## 3. **Stable Diffusion (by Stability AI)**\n- **⭐ Stars:** 70k+\n- **Description:** A latent text-to-image diffusion model capable of generating high-quality images from text prompts.\n- **Repo:** `CompVis/stable-diffusion` / `Stability-AI/stablediffusion`\n\n## 4. **Ollama**\n- **⭐ Stars:** 100k+\n- **Description:** Run large language models locally with a simple interface. Supports LLaMA, Mistral, Gemma, and many more models.\n- **Repo:** `ollama/ollama`\n\n## 5. **Open Interpreter**\n- **⭐ Stars:** 55k+\n- **Description:** Lets LLMs run code locally — acts like an open-source version of ChatGPT&#x27;s Code Interpreter that runs on your machine.\n- **Repo:** `OpenInterpreter/open-interpreter`\n\n---\n\n&gt; **Honorable Mentions:** DeepSeek, Hugging Face Transformers, vLLM, GPT4All, LocalAI, and AutoGPT.\n\n⚠️ *Note: Star counts and rankings shift rapidly. Check [GitHub Trending](https://github.com/trending) for real-time data.*&quot;,
+        &quot;type&quot;: &quot;text&quot;
+      }
+    ],
+    &quot;id&quot;: &quot;msg_42a92b4922e84cbcb4011271bb41407a&quot;,
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;type&quot;: &quot;message&quot;,
+    &quot;usage&quot;: {
+      &quot;balance&quot;: 492203977,
+      &quot;cache_creation&quot;: {
+        &quot;ephemeral_1h_input_tokens&quot;: 0,
+        &quot;ephemeral_5m_input_tokens&quot;: 0
+      },
+      &quot;cache_creation_input_tokens&quot;: 0,
+      &quot;cache_read_input_tokens&quot;: 0,
+      &quot;consume_amount&quot;: 1278560,
+      &quot;hash&quot;: &quot;MzA0NjAyMjEwMGI5ZTdhNTI4ZWI2NjBmOWIyY2Q4MWM2NWFiMDY1NWFhZDkyMWI4OTczNjg3YmE0ODkyZTliYjMzNTRmNDdhNzMwMjIxMDBmMmQ2OTkyNjIyYzAzNDQzYjM4NzUyYmQ2YzM3NDhlYzg5ZTJjMDU4NDdlMWM5MTc1NWRhMmY0NjY4OGY1YTU4&quot;,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;input_tokens&quot;: 22,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;output_tokens&quot;: 503
+    }
+  }
+}</code></pre>
+        <h3>Usage Fields</h3>
+        <p>The response includes the complete <code>usage</code> object. Unit prices are scaled by <code>10^-5</code> per 1000 tokens, while <code>consume_amount</code> and <code>balance</code> are scaled by <code>10^-8</code>.</p>
+        <p class="callout">Replace the GitHub project prompt with code snippets, business data, documents, user instructions, or application runtime state to reuse the same bitgo path for generation, review, analysis, content creation, and embedded reasoning.</p>
+      </section>
+
+      <section class="section" id="security">
+        <h2>9. Security Notes</h2>
+        <ul>
+          <li>Do not commit real private keys, complete <code>X-Params</code>, complete <code>X-Signature</code>, <code>X-Public-Key</code>, or management tokens to the repository.</li>
+          <li>Chain type, deposit network, amount, and <code>money_id</code> must be confirmed by a human before an agent uses them.</li>
+          <li>Private keys should be injected through environment variables, secret managers, or deployment platforms, not stored in templates.</li>
+          <li>Always verify the official receiving address and mainnet before depositing. Transfers to the wrong address or network cannot be recovered by agents or software.</li>
+          <li>Applications should record <code>usage</code> for cost tracking, but should not log sensitive headers or private-key material.</li>
+        </ul>
+      </section>
+
+      <p class="footer-note">bitgo product guide for agent software development and software-embedded reasoning workloads.</p>
+    </main>
+  </div>
+</body>
+</html>
