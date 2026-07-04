@@ -268,9 +268,22 @@
 
     .coin-heading {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
       margin-bottom: 10px;
+    }
+
+    .coin-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .coin-title strong {
+      margin: 0;
     }
 
     .coin-logo {
@@ -294,6 +307,38 @@
     .coin-logo.btc {
       background: #fff4df;
       color: #f7931a;
+    }
+
+    .coin-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      box-shadow: inset 0 0 0 1px rgba(0, 105, 255, 0.24);
+    }
+
+    .coin-tag.fast {
+      background: #e7f7ef;
+      color: #17633a;
+      box-shadow: inset 0 0 0 1px rgba(23, 99, 58, 0.2);
+    }
+
+    .coin-tag.medium {
+      background: #eef4ff;
+      color: #345d9d;
+      box-shadow: inset 0 0 0 1px rgba(52, 93, 157, 0.22);
+    }
+
+    .coin-tag.slow {
+      background: #fff4df;
+      color: #8c4f00;
+      box-shadow: inset 0 0 0 1px rgba(140, 79, 0, 0.22);
     }
 
     .section.dark .tile {
@@ -511,6 +556,7 @@
       .nav-links {
         flex-wrap: wrap;
       }
+
     }
 
     @media (max-width: 640px) {
@@ -571,7 +617,7 @@
         <div class="grid">
           <div class="tile"><strong>Payment Tool for the Agent Era</strong><span>BitGo provides <span class="text-highlight">decentralized virtual-asset payment capabilities</span> for the Agent era, enabling AI agents, automation programs, and developer applications to consume resources safely and verifiably through cryptocurrency wallets. Instead of relying on a traditional account-balance system, it centers payment on <span class="text-highlight">wallet addresses, on-chain identity, and signed authorization</span>, returning payment control to users and programs themselves.</span></div>
           <div class="tile"><strong>Wallet as Payment Identity</strong><span>In BitGo, ETH, BTC, LTC, and other cryptocurrency wallets are not only asset holders. They also act as <span class="text-highlight">authorization credentials</span> for reasoning APIs, model services, data services, and other digital resources. Each request uses a <span class="text-highlight">private-key signature</span> to confirm identity and authorize spending, so the service does not need to custody user private keys or depend on centralized usernames and passwords.</span></div>
-          <div class="tile"><strong>Secure and Transparent Virtual-asset Spending</strong><span>BitGo gives every resource-consumption event a <span class="text-highlight">clear source, quota, and record</span>. Users can see which wallet initiated the request, how much balance was consumed, which fund ID it maps to, and complete <code>usage</code> details for token counts, unit prices, consumed amount, and remaining balance. This keeps automated agent payments <span class="text-highlight">auditable and verifiable</span>.</span></div>
+          <div class="tile"><strong>Secure and Transparent Virtual-asset Spending</strong><span>BitGo gives every resource-consumption event a <span class="text-highlight">clear source, quota, and record</span>. Users can see which wallet initiated the request, how much balance was consumed, which fund ID it maps to, and complete usage details for token counts, unit prices, consumed amount, and remaining balance. This keeps automated agent payments <span class="text-highlight">auditable and verifiable</span>.</span></div>
           <div class="tile"><strong>From Token Spend to the Agent Economy</strong><span>Token consumption is only the starting point for BitGo. The same <span class="text-highlight">wallet-signature and payment mechanism</span> can expand to model calls, tool calls, data purchases, API subscriptions, compute rental, automated trading, task bounties, and cross-platform digital-service settlement, becoming a <span class="text-highlight">payment layer</span> that connects wallets, assets, services, and agent-driven consumption.</span></div>
         </div>
       </section>
@@ -588,7 +634,10 @@
                 <path d="m10 18.4 7 9.9 7-9.9-7 4.1-7-4.1Z" fill="currentColor" opacity="0.72"></path>
                 <path d="m17 13.9-7 3.1 7 4.1 7-4.1-7-3.1Z" fill="#ffffff" opacity="0.34"></path>
               </svg>
-              <strong>Ethereum ETH</strong>
+              <div class="coin-title">
+                <strong>Ethereum ETH</strong>
+                <span class="coin-tag fast">Recommended: fastest</span>
+              </div>
             </div>
             <span>Official receiving address: <code>0xa52d609f23f110d588606a9c82c7c53a0143b6b0</code><br>Network: ETH / ERC-20<br>Estimated arrival: 5 - 15 minutes</span>
           </div>
@@ -598,7 +647,10 @@
                 <circle cx="17" cy="17" r="17" fill="currentColor"></circle>
                 <text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">Ł</text>
               </svg>
-              <strong>Litecoin LTC</strong>
+              <div class="coin-title">
+                <strong>Litecoin LTC</strong>
+                <span class="coin-tag medium">Moderate speed</span>
+              </div>
             </div>
             <span>Official receiving address: <code>MUVwWW6MbBcn9oPnuRU1iEmVAf8JgLgox7</code><br>Network: LTC / Litecoin<br>Estimated arrival: 10 - 25 minutes</span>
           </div>
@@ -608,9 +660,12 @@
                 <circle cx="17" cy="17" r="17" fill="currentColor"></circle>
                 <text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">₿</text>
               </svg>
-              <strong>Bitcoin BTC</strong>
+              <div class="coin-title">
+                <strong>Bitcoin BTC</strong>
+                <span class="coin-tag slow">Slower confirmation</span>
+              </div>
             </div>
-            <span>Official receiving address: <code>bc1p8fhgdj7hz234rmhff8nrw8zrq6hpft3m4dp7c6749weteq0rkhksmyckre</code><br>Network: BTC-Taproot<br>Estimated arrival: 30 - 40 minutes</span>
+            <span>Official receiving address: <code>bc1p8fhgdj7hz234rmhff8nrw8zrq6hpft3m4dp7c6749weteg0rkhksmyckre</code><br>Network: BTC-Taproot<br>Estimated arrival: 30 - 40 minutes</span>
           </div>
         </div>
         <ol class="step-list">
