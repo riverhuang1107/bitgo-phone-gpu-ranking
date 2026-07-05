@@ -1,0 +1,946 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>bitgo Agent Software Reasoning Product Guide (Optimized)</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #0b1324;
+      --muted: #53627a;
+      --paper: #f7fbff;
+      --soft: #eef6ff;
+      --line: #c9d9ef;
+      --blue: #0069ff;
+      --blue-dark: #003ea8;
+      --blue-soft: #dcecff;
+      --black: #06111f;
+      --white: #ffffff;
+      --code: #171717;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.68;
+    }
+
+    .shell {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(0, 105, 255, 0.14), rgba(247, 251, 255, 0) 340px),
+        radial-gradient(circle at top right, rgba(0, 105, 255, 0.16), transparent 360px);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      background: rgba(247, 251, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201, 217, 239, 0.72);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--ink);
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 56px 24px 88px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+      gap: 34px;
+      align-items: stretch;
+      margin-bottom: 46px;
+    }
+
+    .hero-copy {
+      padding: 30px 0 20px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 7px 12px;
+      border: 1px solid var(--blue);
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(40px, 7vw, 86px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .hero-card {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 380px;
+      padding: 26px;
+      border: 2px solid var(--black);
+      border-radius: 8px;
+      background: var(--black);
+      color: var(--white);
+      box-shadow: 12px 12px 0 var(--blue);
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      color: #8fc2ff;
+      font-size: 24px;
+      border: 0;
+      padding: 0;
+    }
+
+    .hero-card p {
+      color: #e9f3ff;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .metric {
+      padding: 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      color: #8fc2ff;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: #c5d8f2;
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .section.dark {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .section.dark p,
+    .section.dark li {
+      color: #e9f3ff;
+    }
+
+    .section.dark h2,
+    .section.dark h3 {
+      color: #8fc2ff;
+    }
+
+    .section h2 {
+      margin: 0 0 16px;
+      padding: 0;
+      border: 0;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .section h3 {
+      margin: 24px 0 10px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tile {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      overflow-wrap: anywhere;
+    }
+
+    .tile strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 17px;
+    }
+
+    .tile span {
+      color: #34445c;
+    }
+
+    .text-highlight {
+      display: inline;
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .coin-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .coin-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .coin-title strong {
+      margin: 0;
+    }
+
+    .coin-logo {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(6, 17, 31, 0.12);
+    }
+
+    .coin-logo.eth {
+      background: #eef2ff;
+      color: #627eea;
+    }
+
+    .coin-logo.ltc {
+      background: #eef4ff;
+      color: #345d9d;
+    }
+
+    .coin-logo.btc {
+      background: #fff4df;
+      color: #f7931a;
+    }
+
+    .coin-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--white);
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      box-shadow: inset 0 0 0 1px rgba(0, 105, 255, 0.24);
+    }
+
+    .coin-tag.fast {
+      background: #e7f7ef;
+      color: #17633a;
+      box-shadow: inset 0 0 0 1px rgba(23, 99, 58, 0.2);
+    }
+
+    .coin-tag.medium {
+      background: #eef4ff;
+      color: #345d9d;
+      box-shadow: inset 0 0 0 1px rgba(52, 93, 157, 0.22);
+    }
+
+    .coin-tag.slow {
+      background: #fff4df;
+      color: #8c4f00;
+      box-shadow: inset 0 0 0 1px rgba(140, 79, 0, 0.22);
+    }
+
+    .deposit-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .deposit-qr img {
+      width: min(100%, 220px);
+      aspect-ratio: 1;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .deposit-qr .qr-caption {
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .section.dark .tile {
+      border-color: #c9d9ef;
+      background: #f4f9ff;
+      color: var(--ink);
+    }
+
+    .section.dark .tile strong {
+      color: var(--ink);
+    }
+
+    .section.dark .tile span {
+      color: #34445c;
+    }
+
+    .section.dark .tile code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .section.dark .callout {
+      color: var(--ink);
+    }
+
+    .section.dark .callout code {
+      background: var(--white);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .section.dark .step-list li {
+      color: var(--ink);
+    }
+
+    .section.dark .step-list li code {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .step-list {
+      counter-reset: steps;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: steps;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 0;
+      min-height: 154px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .step-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .table-scroll table {
+      min-width: 980px;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--black);
+      color: #8fc2ff;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      border-radius: 5px;
+      background: rgba(0, 105, 255, 0.14);
+      color: var(--blue-dark);
+      padding: 0.16em 0.36em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .dark code,
+    .hero-card code {
+      background: rgba(0, 105, 255, 0.18);
+      color: #8fc2ff;
+    }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 18px;
+      border: 1px solid rgba(0, 105, 255, 0.34);
+      border-radius: 8px;
+      background: var(--code);
+      color: #f4f9ff;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 6px solid #cc3a3a;
+      background: #fff0f0;
+      border-radius: 8px;
+      color: #7c1d1d;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .step-list,
+      .grid,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+      }
+
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 34px 14px 56px;
+      }
+
+      .section,
+      .hero-card {
+        padding: 22px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav" aria-label="Page navigation">
+      <div class="brand">
+        <span class="brand-mark">b</span>
+        <span>bitgo Product Docs</span>
+      </div>
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#wallet-prep">Deposit & Wallet</a>
+        <a href="#signing-auth">Signing</a>
+        <a href="#api-call">API Call</a>
+        <a href="#model-pricing">Models</a>
+        <a href="#example">Example</a>
+        <a href="#security">Security</a>
+        <a href="#appendix">Appendix</a>
+      </div>
+    </nav>
+
+    <main>
+      <header class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">Agent Reasoning Wallet</span>
+          <h1>bitgo</h1>
+          <p class="lead">bitgo is an on-chain wallet payment and signing authentication layer for agent software development and software-embedded reasoning. It uses wallet addresses as identities, private-key signatures as authorization, and usage records to track model token consumption, so agent workflows and business applications can reliably access reasoning APIs.</p>
+        </div>
+        <aside class="hero-card" aria-label="Product summary">
+          <div>
+            <h2>Designed for agents and embedded reasoning</h2>
+            <p>Humans confirm the chain, address, amount, funding record, and private-key injection method; agents generate signed parameters, call the reasoning API, and return usage records to the business flow.</p>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong>Wallet</strong><span>On-chain identity</span></div>
+            <div class="metric"><strong>Sign</strong><span>Authorized calls</span></div>
+            <div class="metric"><strong>Usage</strong><span>Consumption audit</span></div>
+          </div>
+        </aside>
+      </header>
+
+      <section class="section" id="overview">
+        <h2>1. Product Overview</h2>
+        <p>bitgo connects on-chain deposits, wallet signatures, and reasoning API consumption into a verifiable request path. Developers can use it for model calls during agent development, or embed it inside application logic for code generation, review, data analysis, content generation, and automated tasks.</p>
+        <div class="grid">
+          <div class="tile"><strong>Wallet as identity</strong><span>ETH, BTC, and LTC wallet addresses serve as both funding endpoints and the key IDs used by bitgo to identify users and wallet records.</span></div>
+          <div class="tile"><strong>Signature as authorization</strong><span>Each request combines a wallet business signature with an interface-level ECDSA signature to verify identity, amount, and request origin.</span></div>
+          <div class="tile"><strong>Auditable usage</strong><span>Responses return token usage, unit prices, consumption amount, balance, and hash values for tracking automated agent spending.</span></div>
+          <div class="tile"><strong>Expandable scenarios</strong><span>The same mechanism can extend to model calls, tool calls, data purchases, API subscriptions, and other digital service settlement flows.</span></div>
+        </div>
+      </section>
+
+      <section class="section dark" id="workflow">
+        <h2>2. Workflow</h2>
+        <p>The bitgo flow has five steps. Humans confirm funds, chain, and sensitive authorization details; agents or software turn the confirmed information into a verifiable reasoning API request.</p>
+        <ol class="step-list">
+          <li>A human deposits assets to the official bitgo receiving address.</li>
+          <li>A human confirms <code>wallet_chain</code>, wallet address, amount, <code>money_id</code>, and the private-key injection method.</li>
+          <li>The agent uses the signer to create the wallet business signature and assemble <code>X-Params</code>.</li>
+          <li>The agent or software calls the reasoning API with signed headers.</li>
+          <li>The server returns the model result and <code>usage</code>, and the system records token consumption and balance changes.</li>
+        </ol>
+      </section>
+
+      <section class="section" id="wallet-prep">
+        <h2>3. Deposit and Wallet Preparation</h2>
+        <p>Deposits are completed by a human. In an exchange or custodial wallet, choose the correct asset and mainnet, then transfer funds to the matching official receiving address.</p>
+        <div class="grid three">
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo eth" viewBox="0 0 34 34" role="img" aria-label="ETH logo">
+                <circle cx="17" cy="17" r="17" fill="currentColor" opacity="0.14"></circle>
+                <path d="M17 5.5 10 17l7 4.1 7-4.1L17 5.5Z" fill="currentColor"></path>
+                <path d="m10 18.4 7 9.9 7-9.9-7 4.1-7-4.1Z" fill="currentColor" opacity="0.72"></path>
+                <path d="m17 13.9-7 3.1 7 4.1 7-4.1-7-3.1Z" fill="#ffffff" opacity="0.34"></path>
+              </svg>
+              <div class="coin-title"><strong>Ethereum ETH</strong><span class="coin-tag fast">Recommended: fastest arrival</span></div>
+            </div>
+            <div class="deposit-qr"><img src="assets/bitgo-deposit-eth-qr.png" alt="Official Ethereum ETH receiving address QR code"><span class="qr-caption">Scan to deposit</span></div>
+            <span>Official receiving address: <code>0xa52d609f23f110d588606a9c82c7c53a0143b6b0</code><br>Network: ETH / ERC-20<br>Estimated arrival: 5 - 15 minutes</span>
+          </div>
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo ltc" viewBox="0 0 34 34" role="img" aria-label="LTC logo"><circle cx="17" cy="17" r="17" fill="currentColor"></circle><text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">L</text></svg>
+              <div class="coin-title"><strong>Litecoin LTC</strong><span class="coin-tag medium">Moderate speed</span></div>
+            </div>
+            <div class="deposit-qr"><img src="assets/bitgo-deposit-ltc-qr.png" alt="Official Litecoin LTC receiving address QR code"><span class="qr-caption">Scan to deposit</span></div>
+            <span>Official receiving address: <code>MUVwWW6MbBcn9oPnuRU1iEmVAf8JgLgox7</code><br>Network: LTC / Litecoin<br>Estimated arrival: 10 - 25 minutes</span>
+          </div>
+          <div class="tile">
+            <div class="coin-heading">
+              <svg class="coin-logo btc" viewBox="0 0 34 34" role="img" aria-label="BTC logo"><circle cx="17" cy="17" r="17" fill="currentColor"></circle><text x="17" y="23" text-anchor="middle" font-size="19" font-weight="800" font-family="Arial, sans-serif" fill="#ffffff">B</text></svg>
+              <div class="coin-title"><strong>Bitcoin BTC</strong><span class="coin-tag slow">Slower arrival</span></div>
+            </div>
+            <div class="deposit-qr"><img src="assets/bitgo-deposit-btc-qr.png" alt="Official Bitcoin BTC receiving address QR code"><span class="qr-caption">Scan to deposit</span></div>
+            <span>Official receiving address: <code>bc1p8fhgdj7hz234rmhff8nrw8zrq6hpft3m4dp7c6749weteg0rkhksmyckre</code><br>Network: BTC-Taproot<br>Estimated arrival: 30 - 40 minutes</span>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Field</th><th>Source</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>wallet_chain</code></td><td>Human-confirmed</td><td>Chain type. Current values are <code>eth</code>, <code>ltc</code>, or <code>btc</code>.</td></tr>
+            <tr><td><code>wallet_address</code></td><td>Human-confirmed</td><td>On-chain wallet address and the key ID used by bitgo to identify the user and wallet record.</td></tr>
+            <tr><td><code>money</code></td><td>Human-confirmed</td><td>Deposit amount or denomination. Agents should not infer it from address format or balance.</td></tr>
+            <tr><td><code>money_id</code></td><td>Human-confirmed</td><td>Amount record or wallet record ID used by the server to identify the authorized funds.</td></tr>
+            <tr><td>private key</td><td>Secure injection</td><td>Inject through environment variables, a secret manager, or the deployment platform. Do not write it to repositories, documents, or logs.</td></tr>
+          </tbody>
+        </table>
+        <div class="warning">Security note: a wrong address, wrong mainnet, or mismatched network type such as Taproot/ERC-20 may cause permanent asset loss.</div>
+      </section>
+
+      <section class="section dark" id="signing-auth">
+        <h2>4. Signing and Authentication</h2>
+        <p>The reasoning API uses two authentication layers: a wallet business signature proves funding authorization, and an interface-level ECDSA signature proves that the HTTP request has not been replaced.</p>
+        <h3>Wallet business signature</h3>
+        <pre><code>${wallet_address}${money}${money_id}</code></pre>
+        <ol>
+          <li>A human provides the chain type, wallet address, amount, <code>money_id</code>, and securely injected private key.</li>
+          <li>The agent concatenates <code>wallet_address + money + money_id</code> as the signing message and runs <code>sha256.Sum256</code>.</li>
+          <li>The signer selects ECDSA, Schnorr, or Ethereum signing based on chain and address type.</li>
+          <li>The signature is base64-encoded, then assembled into JSON with the wallet address, amount, and <code>money_id</code>.</li>
+          <li>That JSON string is base64-encoded again and written to the HTTP header <code>X-Params</code>.</li>
+          <li>The agent generates <code>X-Nonce</code>, hashes <code>X-Params + X-Nonce</code> with SHA-256, and signs it with a local ECDSA P-256 private key to produce <code>X-Signature</code>.</li>
+        </ol>
+        <table>
+          <thead><tr><th>Chain</th><th>Private key format</th><th>Standard address signing</th><th>Taproot / special address</th></tr></thead>
+          <tbody>
+            <tr><td><code>ltc</code></td><td>Litecoin mainnet WIF</td><td><code>btcec/v2/ecdsa.SignCompact</code></td><td><code>ltc1p...</code> uses <code>btcec/v2/schnorr.Sign</code></td></tr>
+            <tr><td><code>btc</code></td><td>Bitcoin mainnet WIF</td><td><code>1...</code>, <code>3...</code>, and <code>bc1q...</code> use compact ECDSA</td><td><code>bc1p...</code> first uses <code>txscript.TweakTaprootPrivKey</code>, then Schnorr signing</td></tr>
+            <tr><td><code>eth</code></td><td>Ethereum hex private key</td><td><code>github.com/ethereum/go-ethereum/crypto.Sign</code></td><td>The key may include or omit the <code>0x</code> prefix</td></tr>
+          </tbody>
+        </table>
+        <p class="callout">The final request must include <code>X-Params</code>, <code>X-Nonce</code>, <code>X-Signature</code>, and <code>X-Public-Key</code>.</p>
+      </section>
+
+      <section class="section" id="api-call">
+        <h2>5. API Call</h2>
+        <p>The agent or software writes task context into <code>messages</code>, selects a model, and sends the request to the reasoning API. The request body follows the Anthropic Messages style.</p>
+        <table>
+          <thead><tr><th>Item</th><th>Value</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>endpoint</code></td><td><code>https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages</code></td><td>Reasoning API request URL</td></tr>
+            <tr><td><code>method</code></td><td><code>POST</code></td><td>Send a JSON request body</td></tr>
+            <tr><td><code>Content-Type</code></td><td><code>application/json</code></td><td>Always use JSON</td></tr>
+            <tr><td><code>X-Params</code></td><td><code>BASE64_ENCODED_WALLET_PARAMS</code></td><td>Wallet business-signature authentication parameter</td></tr>
+            <tr><td><code>X-Nonce</code></td><td><code>RANDOM_NONCE</code></td><td>Random string used in the interface-level ECDSA signature</td></tr>
+            <tr><td><code>X-Signature</code></td><td><code>ECDSA_SIGNATURE_HEX</code></td><td>ASN.1/DER hex signature over <code>X-Params + X-Nonce</code></td></tr>
+            <tr><td><code>X-Public-Key</code></td><td><code>ECDSA_PUBLIC_KEY_HEX</code></td><td>Local ECDSA public key DER hex used by the server for verification</td></tr>
+          </tbody>
+        </table>
+        <h3>Short request example</h3>
+        <pre><code class="language-json">{
+  &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+  &quot;max_tokens&quot;: 1024,
+  &quot;stream&quot;: false,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Run one large-model reasoning task based on the current application context.&quot;
+    }
+  ]
+}</code></pre>
+        <h3>Short response structure</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [{ &quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Model response content...&quot; }],
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;usage&quot;: {
+      &quot;input_tokens&quot;: 23,
+      &quot;output_tokens&quot;: 956,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;consume_amount&quot;: 2420620,
+      &quot;balance&quot;: 493482537,
+      &quot;hash&quot;: &quot;...&quot;
+    }
+  }
+}</code></pre>
+        <h3>usage field notes</h3>
+        <ul>
+          <li>The actual prices for <code>input_token_unit_price</code> and <code>output_token_unit_price</code> are the field values multiplied by <code>10^-5</code>. Unit prices are expressed per 1,000 tokens.</li>
+          <li>The actual consumption amount for <code>consume_amount</code> is the field value multiplied by <code>10^-8</code>.</li>
+          <li>The actual balance for <code>balance</code> is the field value multiplied by <code>10^-8</code>.</li>
+          <li>If the server response does not include <code>usage</code>, the CLI should output <code>&quot;usage&quot;: null</code> and should not estimate or fabricate values.</li>
+        </ul>
+      </section>
+
+      <section class="section dark" id="model-pricing">
+        <h2>6. Models and Pricing</h2>
+        <p>Select a model through the <code>model</code> field in the request body. For the main flow, choose common models by quality, latency, and cost; the full pricing table is in the appendix.</p>
+        <div class="grid">
+          <div class="tile"><strong>Low cost</strong><span><code>openai/gpt-5-nano</code> and <code>deepseek/deepseek-v4-flash</code> are suitable for batch classification, summaries, and lightweight decisions.</span></div>
+          <div class="tile"><strong>High quality</strong><span><code>claude-4.6-opus</code> and <code>anthropic/claude-4.8-opus</code> are suitable for complex reasoning, long-form analysis, and high-quality generation.</span></div>
+          <div class="tile"><strong>Code / complex reasoning</strong><span><code>openai/gpt-5.2-codex</code> and <code>openai/gpt-5.3-codex</code> are suitable for software development, code review, and engineering tasks.</span></div>
+          <div class="tile"><strong>Fast response</strong><span><code>claude-4.5-haiku</code> and <code>minimax/minimax-m2.5-highspeed</code> are suitable for interactive agents and low-latency business flows.</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="example">
+        <h2>7. End-to-End Example</h2>
+        <p>The following example shows an end-to-end call flow for filtering popular AI projects on GitHub. This is only a demonstration scenario; in real usage, the input can be replaced with code snippets, business data, document content, user instructions, or software runtime state.</p>
+        <table>
+          <thead><tr><th>Stage</th><th>Content</th></tr></thead>
+          <tbody>
+            <tr><td>Goal</td><td>Ask an agent to identify which GitHub Trending candidate repositories are AI open-source projects and generate a short report.</td></tr>
+            <tr><td>Input prompt</td><td><code>List the 5 most popular AI open-source projects on GitHub</code></td></tr>
+            <tr><td>Call path</td><td>A human deposits funds and confirms wallet information; the agent generates <code>X-Params</code> and the interface-level signature; the software calls <code>/v1/messages</code>.</td></tr>
+            <tr><td>Response summary</td><td>The model returns names, links, popularity signals, and short descriptions for 5 projects; the business system writes the result into a report.</td></tr>
+            <tr><td>usage summary</td><td>The system records input tokens, output tokens, consumption amount, balance, and hash for later audit.</td></tr>
+          </tbody>
+        </table>
+        <p class="callout">The core value of bitgo is not project filtering itself, but connecting any software reasoning task to a signed, billable, and auditable wallet authorization path.</p>
+      </section>
+
+      <section class="section dark" id="security">
+        <h2>8. Security Notes</h2>
+        <ul>
+          <li>Do not write real private keys, complete <code>X-Params</code>, complete <code>X-Signature</code>, <code>X-Public-Key</code>, or management tokens into repositories.</li>
+          <li>Chain type, deposit network, amount, and <code>money_id</code> must be confirmed by a human before being used by an agent.</li>
+          <li>Private keys should be injected through environment variables, a secret manager, or the deployment platform, and should not appear in config templates.</li>
+          <li>Before depositing, verify the official receiving address and mainnet. Transfers to a wrong address or wrong network cannot be automatically recovered by the agent or software.</li>
+          <li>When software calls the reasoning API, record <code>usage</code>, but do not log sensitive headers or private-key material.</li>
+          <li>Example nonce, signatures, balances, hashes, and token counts change with each call and should not be hard-coded into business logic.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="appendix">
+        <h2>9. Appendix</h2>
+        <h3>Full model table</h3>
+        <p>Prices are shown in USD / 1,000,000 tokens.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Model ID</th><th>Model name</th><th>Provider</th><th>Input price</th><th>Output price</th></tr></thead>
+            <tbody>
+              <tr><td><code>deepseek-v3</code></td><td>DeepSeek-V3</td><td>DeepSeek</td><td>0.28</td><td>1.11</td></tr>
+              <tr><td><code>deepseek-v3.1</code></td><td>DeepSeek-V3.1</td><td>DeepSeek</td><td>0.56</td><td>1.67</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-flash</code></td><td>DeepSeek-V4-Flash</td><td>DeepSeek</td><td>0.14</td><td>0.28</td></tr>
+              <tr><td><code>deepseek/deepseek-v4-pro</code></td><td>DeepSeek-V4-Pro</td><td>DeepSeek</td><td>1.67</td><td>3.33</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-exp</code></td><td>DeepSeek/DeepSeek-V3.2-Exp</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-exp-thinking</code></td><td>DeepSeek/DeepSeek-V3.2-Exp-Thinking</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>deepseek/deepseek-v3.2-251201</code></td><td>Deepseek/DeepSeek-V3.2</td><td>DeepSeek</td><td>0.28</td><td>0.42</td></tr>
+              <tr><td><code>claude-4.1-opus</code></td><td>Claude 4.1 Opus</td><td>Anthropic</td><td>15</td><td>75.6</td></tr>
+              <tr><td><code>claude-4.5-haiku</code></td><td>Claude 4.5 Haiku</td><td>Anthropic</td><td>5</td><td>5.04</td></tr>
+              <tr><td><code>claude-4.5-opus</code></td><td>Claude 4.5 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.5-sonnet</code></td><td>Claude 4.5 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>claude-4.6-opus</code></td><td>Claude 4.6 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>claude-4.6-sonnet</code></td><td>Claude 4.6 Sonnet</td><td>Anthropic</td><td>3</td><td>15.12</td></tr>
+              <tr><td><code>anthropic/claude-4.7-opus</code></td><td>Claude 4.7 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>anthropic/claude-4.8-opus</code></td><td>Claude 4.8 Opus</td><td>Anthropic</td><td>5</td><td>25.2</td></tr>
+              <tr><td><code>MiniMax-M1</code></td><td>MiniMax M1</td><td>Minimax</td><td>0.56</td><td>2.22</td></tr>
+              <tr><td><code>minimax/minimax-m2.5</code></td><td>Minimax/Minimax-M2.5</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m2.5-highspeed</code></td><td>Minimax/Minimax-M2.5 Highspeed</td><td>Minimax</td><td>0.58</td><td>2.33</td></tr>
+              <tr><td><code>minimax/minimax-m2.7</code></td><td>Minimax/Minimax-M2.7</td><td>Minimax</td><td>0.29</td><td>1.17</td></tr>
+              <tr><td><code>minimax/minimax-m3</code></td><td>Minimax/Minimax-M3</td><td>Minimax</td><td>0.29</td><td>11.67</td></tr>
+              <tr><td><code>openai/gpt-5</code></td><td>OpenAI/GPT-5</td><td>OpenAI</td><td>1.26</td><td>10.08</td></tr>
+              <tr><td><code>openai/gpt-5-nano</code></td><td>OpenAI/GPT-5 Nano</td><td>OpenAI</td><td>0.0504</td><td>0.4032</td></tr>
+              <tr><td><code>openai/gpt-5.2</code></td><td>OpenAI/GPT-5.2</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5-mini</code></td><td>Openai/GPT-5 Mini</td><td>OpenAI</td><td>0.252</td><td>2.016</td></tr>
+              <tr><td><code>openai/gpt-5-pro</code></td><td>Openai/GPT-5 Pro</td><td>OpenAI</td><td>15.12</td><td>120.96</td></tr>
+              <tr><td><code>openai/gpt-5.2-codex</code></td><td>Openai/GPT-5.2 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.3-codex</code></td><td>Openai/GPT-5.3 Codex</td><td>OpenAI</td><td>1.764</td><td>14.112</td></tr>
+              <tr><td><code>openai/gpt-5.4</code></td><td>Openai/GPT-5.4</td><td>OpenAI</td><td>2.52</td><td>15.12</td></tr>
+              <tr><td><code>openai/gpt-5.4-mini</code></td><td>Openai/GPT-5.4 Mini</td><td>OpenAI</td><td>0.756</td><td>4.536</td></tr>
+              <tr><td><code>openai/gpt-5.4-nano</code></td><td>Openai/GPT-5.4 Nano</td><td>OpenAI</td><td>0.2016</td><td>1.26</td></tr>
+              <tr><td><code>openai/gpt-5.4-pro</code></td><td>Openai/GPT-5.4 Pro</td><td>OpenAI</td><td>30.24</td><td>181.44</td></tr>
+              <tr><td><code>openai/gpt-5.5</code></td><td>Openai/GPT-5.5</td><td>OpenAI</td><td>5.04</td><td>30.24</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.5</code></td><td>Moonshotai/Kimi-K2.5</td><td>Moonshot-Kimi</td><td>0.56</td><td>2.92</td></tr>
+              <tr><td><code>moonshotai/kimi-k2.6</code></td><td>Moonshotai/Kimi-K2.6</td><td>Moonshot-Kimi</td><td>0.9</td><td>3.75</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Full BTC request example</h3>
+        <pre><code class="language-json">{
+  &quot;method&quot;: &quot;POST&quot;,
+  &quot;url&quot;: &quot;https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages&quot;,
+  &quot;headers&quot;: {
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+    &quot;X-Params&quot;: &quot;BASE64_ENCODED_WALLET_PARAMS&quot;,
+    &quot;X-Nonce&quot;: &quot;RANDOM_NONCE&quot;,
+    &quot;X-Signature&quot;: &quot;ECDSA_SIGNATURE_HEX&quot;,
+    &quot;X-Public-Key&quot;: &quot;ECDSA_PUBLIC_KEY_HEX&quot;
+  },
+  &quot;body&quot;: {
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;stream&quot;: false,
+    &quot;messages&quot;: [
+      {
+        &quot;role&quot;: &quot;user&quot;,
+        &quot;content&quot;: &quot;List the 5 most popular AI open-source projects on GitHub&quot;
+      }
+    ]
+  }
+}</code></pre>
+        <h3>Full BTC response example</h3>
+        <pre><code class="language-json">{
+  &quot;status&quot;: 200,
+  &quot;body&quot;: {
+    &quot;content&quot;: [
+      {
+        &quot;type&quot;: &quot;text&quot;,
+        &quot;text&quot;: &quot;Returns a structured summary of 5 popular AI open-source projects.&quot;
+      }
+    ],
+    &quot;id&quot;: &quot;msg_c0cd43018acb49e99a3cfe19dfdfe7e4&quot;,
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;role&quot;: &quot;assistant&quot;,
+    &quot;stop_reason&quot;: &quot;end_turn&quot;,
+    &quot;type&quot;: &quot;message&quot;,
+    &quot;usage&quot;: {
+      &quot;balance&quot;: 493482537,
+      &quot;cache_creation&quot;: {
+        &quot;ephemeral_1h_input_tokens&quot;: 0,
+        &quot;ephemeral_5m_input_tokens&quot;: 0
+      },
+      &quot;cache_creation_input_tokens&quot;: 0,
+      &quot;cache_read_input_tokens&quot;: 0,
+      &quot;consume_amount&quot;: 2420620,
+      &quot;hash&quot;: &quot;MzA0NTAyMjEwMGY5MjlkZDE0MzNhYTkxZTYzNzVmN2RlOGU0YjQ3MzkzN2QwMDU4NWViOGI2ZjUyNDUwYTdkMjVlNmY4OGQ2MWEwMjIwNTM5ZTdhMjAxNmEzNGRiMmQxZDc4OGI0YmRhZjQ2YjM3NmUyZjAxNmRkNmE3MTc0YjE3NTIyOGFlM2FiZDYzMg==&quot;,
+      &quot;input_token_unit_price&quot;: 500,
+      &quot;input_tokens&quot;: 23,
+      &quot;output_token_unit_price&quot;: 2520,
+      &quot;output_tokens&quot;: 956
+    }
+  }
+}</code></pre>
+        <h3>curl connectivity test</h3>
+        <pre><code>curl -X POST &quot;https://api-token-enigmhaven.expvent.com.cn:1111/v1/messages&quot;   -H &quot;Content-Type: application/json&quot;   -H &quot;X-Params: BASE64_ENCODED_WALLET_PARAMS&quot;   -H &quot;X-Nonce: RANDOM_NONCE&quot;   -H &quot;X-Signature: ECDSA_SIGNATURE_HEX&quot;   -H &quot;X-Public-Key: ECDSA_PUBLIC_KEY_HEX&quot;   --data-raw '{
+    &quot;model&quot;: &quot;claude-4.6-opus&quot;,
+    &quot;max_tokens&quot;: 1024,
+    &quot;stream&quot;: false,
+    &quot;messages&quot;: [{ &quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot; }]
+  }'</code></pre>
+        <h3>Field dictionary</h3>
+        <table>
+          <thead><tr><th>Field</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>wallet_chain</code></td><td>Chain type. Current values are <code>eth</code>, <code>ltc</code>, or <code>btc</code>.</td></tr>
+            <tr><td><code>wallet_address</code></td><td>On-chain address used as the key ID for the user and wallet record.</td></tr>
+            <tr><td><code>money</code></td><td>Human-confirmed amount or denomination.</td></tr>
+            <tr><td><code>money_id</code></td><td>Amount record or wallet record ID.</td></tr>
+            <tr><td><code>signature</code></td><td>Base64 string produced by signing <code>wallet_address + money + money_id</code>.</td></tr>
+            <tr><td><code>X-Params</code></td><td>Header value produced by base64-encoding the wallet parameter JSON.</td></tr>
+            <tr><td><code>X-Nonce</code></td><td>Random string used in the interface-level signature.</td></tr>
+            <tr><td><code>X-Signature</code></td><td>Interface-level ECDSA P-256 signature hex.</td></tr>
+            <tr><td><code>X-Public-Key</code></td><td>ECDSA public key DER hex used by the server for verification.</td></tr>
+            <tr><td><code>usage</code></td><td>Server-returned token usage, unit prices, consumption amount, balance, and hash.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <p class="footer-note">bitgo optimized product guide for agent software development and software-embedded reasoning workloads.</p>
+    </main>
+  </div>
+</body>
+</html>
